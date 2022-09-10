@@ -57,7 +57,9 @@ func (s *Server) Start() {
 
 	s.logger.Infof(s.ctx, "Starting server at %v", httpServer.Addr)
 	go func() {
-		if err := httpServer.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
+		err := httpServer.ListenAndServeTLS("./hack/localhost.crt", "./hack/localhost.key")
+		if err != nil && errors.Is(err, http.ErrServerClosed) {
+			//if err := httpServer.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			s.logger.Errorf(s.ctx, "Unexpected server close: %v", err)
 			os.Exit(1)
 		}
