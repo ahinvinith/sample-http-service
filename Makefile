@@ -27,8 +27,7 @@ test: lint
 	env GO111MODULE=on go test -mod=vendor -race -coverprofile=${UNIT_COVERAGE_OUTPUT} ./...
 
 run:
-	env GO111MODULE=on go build -mod=vendor
-	env ./sample-service
+	env GOOS=linux CGO_ENABLED=0 GO111MODULE=on /usr/local/go/bin/go run -mod=vendor  cmd/sample-service/main.go
 
 build:
 	env GOOS=linux CGO_ENABLED=0 GO111MODULE=on /usr/local/go/bin/go build -mod=vendor -o builds/sample-service cmd/sample-service/main.go
@@ -43,3 +42,8 @@ docker-build-images: docker-build
 	docker tag sample-service snagarju/sample-service:${BUILD_VERSION}
 	docker push snagarju/sample-service:latest
 	docker push snagarju/sample-service:${BUILD_VERSION}
+
+certs:
+	mkdir -p hack
+	openssl req  -new  -newkey rsa:2048  -nodes  -keyout ./hack/localhost.key  -out ./hack/localhost.csr
+	openssl  x509  -req  -days 365  -in ./hack/localhost.csr  -signkey ./hack/localhost.key  -out ./hack/localhost.crt
