@@ -57,9 +57,9 @@ func (s *Server) Start() {
 
 	s.logger.Infof(s.ctx, "Starting server at %v", httpServer.Addr)
 	go func() {
-		err := httpServer.ListenAndServeTLS("./hack/localhost.crt", "./hack/localhost.key")
-		if err != nil && errors.Is(err, http.ErrServerClosed) {
-			//if err := httpServer.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
+		// err := httpServer.ListenAndServeTLS("./hack/localhost.crt", "./hack/localhost.key")
+		// if err != nil && errors.Is(err, http.ErrServerClosed) {
+			if err := httpServer.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			s.logger.Errorf(s.ctx, "Unexpected server close: %v", err)
 			os.Exit(1)
 		}
@@ -77,6 +77,7 @@ func (s *Server) Start() {
 
 func (s *Server) handleRequests() *mux.Router {
 	router := mux.NewRouter()
-	router.HandleFunc("/status", s.e.Status).Methods("GET")
+	router.HandleFunc("/employees",s.e.GetAllEmployees ).Methods("GET")
+	router.HandleFunc("/employees/{id}", s.e.GetAllEmployeeById).Methods("GET")
 	return router
 }
